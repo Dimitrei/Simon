@@ -72,7 +72,6 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("gameType", gson.toJson(gameType));
-        editor.apply();
         editor.commit();
     }
 

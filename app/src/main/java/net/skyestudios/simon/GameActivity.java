@@ -15,6 +15,10 @@ import com.google.gson.Gson;
 public class GameActivity extends AppCompatActivity implements ImageView.OnClickListener {
     GameType gameType;
     String gameTypeString;
+
+    Integer currentRound;
+    Integer highestRound;
+
     Gson gson;
 
     ImageView upperLeftCorner_ImageView,
@@ -38,6 +42,7 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
         highestRound_TextView = (TextView) findViewById(R.id.highestRound_TextView);
 
         gson = new Gson();
+        currentRound = 0;
 
         loadSettings();
 
@@ -75,9 +80,22 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
                 .show();
     }
 
+
+    private void saveSettings() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("highestRound", gson.toJson(highestRound));
+        editor.commit();
+    }
+
     private void loadSettings() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         gameTypeString = sharedPreferences.getString("gameType", null);
+        highestRound = sharedPreferences.getInt("highestRound", -1);
+        if (highestRound == -1) {
+            highestRound = 0;
+            saveSettings();
+        }
         gameType = gson.fromJson(gameTypeString, GameType.class);
     }
 
