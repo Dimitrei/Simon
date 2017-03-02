@@ -4,9 +4,11 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -67,15 +69,23 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void saveSettings() {
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("gameType", gson.toJson(gameType));
         editor.apply();
+        editor.commit();
     }
 
     private void loadSettings() {
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         gameType = gson.fromJson(sharedPreferences.getString("gameType", null), GameActivity.GameType.class);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadSettings();
     }
 
     @Override
@@ -120,10 +130,12 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
                 settings_Button.setVisibility(View.VISIBLE);
                 break;
             case R.id.startGame_Button:
-                Log.d("DEBUG", "onClick: startGame_Button");
+                Intent gameActivity_Intent = new Intent(getApplicationContext(), GameActivity.class);
+                startActivity(gameActivity_Intent);
                 break;
             case R.id.settings_Button:
-                Log.d("DEBUG", "onClick: settings_Button");
+                Intent settingsActivity_Intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(settingsActivity_Intent);
                 break;
             default:
                 Log.d("DEBUG", "onClick: View not handled");
