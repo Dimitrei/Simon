@@ -87,7 +87,6 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("gameType", gson.toJson(gameType));
-        editor.apply();
         editor.commit();
     }
 
