@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 
 public class MenuActivity extends AppCompatActivity implements View.OnClickListener {
     RelativeLayout screen;
-    TextView preStartMessage_TextView;
+    TextView preStartMessage_TextView, title_TextView;
     Boolean preStartMessage_TextView_Visibility;
     Button startGame_Button, settings_Button;
     Gson gson;
@@ -34,10 +34,12 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
         gson = new Gson();
 
+        title_TextView = (TextView) findViewById(R.id.title_TextView);
         screen = (RelativeLayout) findViewById(R.id.activity_menu);
         preStartMessage_TextView = (TextView) findViewById(R.id.preStartMessage_TextView);
         startGame_Button = (Button) findViewById(R.id.startGame_Button);
         settings_Button = (Button) findViewById(R.id.settings_Button);
+
         final ObjectAnimator OA = ObjectAnimator.ofInt(preStartMessage_TextView, "textColor",
                 Color.WHITE, Color.TRANSPARENT);
         OA.setDuration(1200);
@@ -102,8 +104,6 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
                 .setNegativeButton("No", null)
                 .setCancelable(false)
                 .show();
-
-
     }
 
     @Override

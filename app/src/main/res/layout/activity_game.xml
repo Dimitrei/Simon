@@ -32,7 +32,8 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 app:srcCompat="@drawable/corner_green"
-                android:onClick="onClick" />
+                android:onClick="onClick"
+                android:backgroundTintMode="multiply" />
 
             <ImageView
                 android:id="@+id/upperRightCorner_ImageView"
@@ -42,7 +43,8 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 app:srcCompat="@drawable/corner_red"
-                android:onClick="onClick" />
+                android:onClick="onClick"
+                android:backgroundTintMode="multiply" />
         </LinearLayout>
 
         <LinearLayout
@@ -58,7 +60,8 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 app:srcCompat="@drawable/corner_blue"
-                android:onClick="onClick" />
+                android:onClick="onClick"
+                android:backgroundTintMode="multiply" />
 
             <ImageView
                 android:id="@+id/lowerRightCorner_ImageView"
@@ -68,7 +71,8 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 app:srcCompat="@drawable/corner_yellow"
-                android:onClick="onClick" />
+                android:onClick="onClick"
+                android:backgroundTintMode="multiply" />
         </LinearLayout>
     </LinearLayout>
 
