@@ -85,7 +85,7 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
                     }
                 })
                 .setTitle("Simon")
-                .setMessage("Game Mode: " + gameTypeString)
+                .setMessage("Game Type: " + gameTypeString)
                 .show();
 
         gameLooper = new GameLooperTask(this, gameType);
