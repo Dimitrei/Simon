@@ -43,10 +43,12 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
 
         currentRound_TextView = (TextView) findViewById(R.id.currentRound_TextView);
         highestRound_TextView = (TextView) findViewById(R.id.highestRound_TextView);
+
         animator = ValueAnimator.ofFloat(1f, 0f);
         animator.setDuration(300);
         animator.setRepeatMode(ValueAnimator.REVERSE);
         animator.setRepeatCount(1);
+
         gson = new Gson();
         currentRound = 0;
 
@@ -170,8 +172,14 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
         gameLooper.setPause(false);
     }
 
-    public void onClick(View view) {
+    @Override
+    protected void onDestroy() {
+        gameLooper.cancel(true);
+        super.onStop();
+    }
 
+    public void onClick(View view) {
+//        animator.removeAllUpdateListeners();
         switch (view.getId()) {
             case R.id.upperLeftCorner_ImageView:
                 //blink
@@ -182,17 +190,60 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
                     }
                 });
                 animator.start();
-
+                animator.removeAllUpdateListeners();
                 //sound
 
                 //check queue inGameLooper
-                gameLooper.checkSimonQueue(0);
+                if (gameLooper.checkSimonQueue(0) && gameLooper.simonQueue.isEmpty()) {
+                    gameLooper.setPause(true);
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle("Round Results")
+                            .setMessage("Successful!\n" +
+                                    "You moved on to the next round...")
+                            .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.gameLooper.setPause(true);
+                                    GameActivity.this.onBackPressed();
+                                }
+                            })
+                            .setPositiveButton("Continue...", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.currentRound = ++currentRound;
+                                    ((TextView) GameActivity.this.findViewById(R.id.currentRound_TextView)).setText(currentRound.toString());
+                                    gameLooper.setPause(false);
+                                }
+                            })
+                            .show();
+                } else {
+                    if (gameLooper.isGameLost) {
+                        gameLooper.setPause(true);
+                        new AlertDialog.Builder(this)
+                                .setCancelable(false)
+                                .setIcon(R.mipmap.ic_launcher)
+                                .setTitle("Round Results")
+                                .setMessage("Unsuccessful!\n" +
+                                        "You failed the round...")
+                                .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                        GameActivity.this.onBackPressed();
+                                    }
+                                })
+                                .show();
+                    }
+                }
 
                 //dequeue if next in queue
                 //else round ends
                 ////if highestRound < currentRound update it & save to settings
                 ////else ask user if they'd like to play again
-                gameLooper.setPause(false);
                 break;
             case R.id.upperRightCorner_ImageView:
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -202,11 +253,55 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
                     }
                 });
                 animator.start();
+                animator.removeAllUpdateListeners();
 
                 //check queue inGameLooper
-                gameLooper.checkSimonQueue(1);
+                if (gameLooper.checkSimonQueue(1) && gameLooper.simonQueue.isEmpty()) {
+                    gameLooper.setPause(true);
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle("Round Results")
+                            .setMessage("Successful!\n" +
+                                    "You moved on to the next round...")
+                            .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.gameLooper.setPause(true);
+                                    GameActivity.this.onBackPressed();
+                                }
+                            })
+                            .setPositiveButton("Continue...", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.currentRound = ++currentRound;
+                                    ((TextView) GameActivity.this.findViewById(R.id.currentRound_TextView)).setText(currentRound.toString());
+                                    gameLooper.setPause(false);
+                                }
+                            })
+                            .show();
+                } else {
+                    if (gameLooper.isGameLost) {
+                        gameLooper.setPause(true);
+                        new AlertDialog.Builder(this)
+                                .setCancelable(false)
+                                .setIcon(R.mipmap.ic_launcher)
+                                .setTitle("Round Results")
+                                .setMessage("Unsuccessful!\n" +
+                                        "You failed the round...")
+                                .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                        GameActivity.this.onBackPressed();
+                                    }
+                                })
+                                .show();
+                    }
+                }
 
-                gameLooper.setPause(false);
                 break;
             case R.id.lowerLeftCorner_ImageView:
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -216,11 +311,55 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
                     }
                 });
                 animator.start();
+                animator.removeAllUpdateListeners();
 
                 //check queue inGameLooper
-                gameLooper.checkSimonQueue(2);
+                if (gameLooper.checkSimonQueue(2) && gameLooper.simonQueue.isEmpty()) {
+                    gameLooper.setPause(true);
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle("Round Results")
+                            .setMessage("Successful!\n" +
+                                    "You moved on to the next round...")
+                            .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.gameLooper.setPause(true);
+                                    GameActivity.this.onBackPressed();
+                                }
+                            })
+                            .setPositiveButton("Continue...", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.currentRound = ++currentRound;
+                                    ((TextView) GameActivity.this.findViewById(R.id.currentRound_TextView)).setText(currentRound.toString());
+                                    gameLooper.setPause(false);
+                                }
+                            })
+                            .show();
+                } else {
+                    if (gameLooper.isGameLost) {
+                        gameLooper.setPause(true);
+                        new AlertDialog.Builder(this)
+                                .setCancelable(false)
+                                .setIcon(R.mipmap.ic_launcher)
+                                .setTitle("Round Results")
+                                .setMessage("Unsuccessful!\n" +
+                                        "You failed the round...")
+                                .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                        GameActivity.this.onBackPressed();
+                                    }
+                                })
+                                .show();
+                    }
+                }
 
-                gameLooper.setPause(false);
                 break;
             case R.id.lowerRightCorner_ImageView:
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -230,13 +369,58 @@ public class GameActivity extends AppCompatActivity implements ImageView.OnClick
                     }
                 });
                 animator.start();
+                animator.removeAllUpdateListeners();
 
                 //check queue inGameLooper
-                gameLooper.checkSimonQueue(2);
+                if (gameLooper.checkSimonQueue(3) && gameLooper.simonQueue.isEmpty()) {
+                    gameLooper.setPause(true);
+                    new AlertDialog.Builder(this)
+                            .setCancelable(false)
+                            .setIcon(R.mipmap.ic_launcher)
+                            .setTitle("Round Results")
+                            .setMessage("Successful!\n" +
+                                    "You moved on to the next round...")
+                            .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.gameLooper.setPause(true);
+                                    GameActivity.this.onBackPressed();
+                                }
+                            })
+                            .setPositiveButton("Continue...", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                    GameActivity.this.currentRound = ++currentRound;
+                                    ((TextView) GameActivity.this.findViewById(R.id.currentRound_TextView)).setText(currentRound.toString());
+                                    gameLooper.setPause(false);
+                                }
+                            })
+                            .show();
+                } else {
+                    if (gameLooper.isGameLost) {
+                        gameLooper.setPause(true);
+                        new AlertDialog.Builder(this)
+                                .setCancelable(false)
+                                .setIcon(R.mipmap.ic_launcher)
+                                .setTitle("Round Results")
+                                .setMessage("Unsuccessful!\n" +
+                                        "You failed the round...")
+                                .setNegativeButton("I quit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                        GameActivity.this.onBackPressed();
+                                    }
+                                })
+                                .show();
+                    }
+                }
 
-                gameLooper.setPause(false);
                 break;
         }
+
     }
 
     public enum GameType {

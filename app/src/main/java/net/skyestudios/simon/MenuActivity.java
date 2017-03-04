@@ -127,6 +127,7 @@ public class MenuActivity extends AppCompatActivity implements View.OnClickListe
 
                 startGame_Button.setVisibility(View.VISIBLE);
                 settings_Button.setVisibility(View.VISIBLE);
+                findViewById(R.id.activity_menu).setOnClickListener(null);
                 break;
             case R.id.startGame_Button:
                 Intent gameActivity_Intent = new Intent(getApplicationContext(), GameActivity.class);
