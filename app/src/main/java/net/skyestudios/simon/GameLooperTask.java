@@ -1,6 +1,5 @@
 package net.skyestudios.simon;
 
-import android.animation.ValueAnimator;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
@@ -15,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class GameLooperTask extends AsyncTask<Void, Void, Void> {
     GameActivity gameActivity;
     Object gameLoopLock;
-    Boolean isLocked, isGameLost;
+    Boolean isLocked, isGameLost, hasStarted;
     Integer currentRound;
     GameActivity.GameType gameType;
     LinkedBlockingQueue<Integer> simonQueue;
@@ -27,6 +26,7 @@ public class GameLooperTask extends AsyncTask<Void, Void, Void> {
         this.gameLoopLock = new Object();
         this.isLocked = false;
         this.isGameLost = false;
+        this.hasStarted = false;
         this.currentRound = 1;
         gameActivity.currentRound = currentRound;
         this.gameType = gameType;
@@ -44,7 +44,7 @@ public class GameLooperTask extends AsyncTask<Void, Void, Void> {
                         gameLoopLock.wait();
                         Log.i("INFO", "doInBackground: game is unpaused");
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.i("INFO", "doInBackground: game has been cancel and user has to retry");
                     }
                 }
                 while (!isLocked && !isCancelled()) {
@@ -56,7 +56,12 @@ public class GameLooperTask extends AsyncTask<Void, Void, Void> {
                         }
                     });
                     addSimonSequence();
-                    showSimonSequence();
+                    for (Integer position :
+                            simonQueue) {
+                        hasStarted = false;
+                        showSimonSequence(position);
+                        hasStarted = true;
+                    }
                     setPause(true);
                 }
             }
@@ -71,83 +76,70 @@ public class GameLooperTask extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void showSimonSequence() {
-        for (Integer position :
-                simonQueue) {
-            //blink image
-            //make sound
-            synchronized (gameLoopLock) {
-                try {
-                    Thread.sleep(800);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                switch (position) {
-                    case 0:
-                        gameActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameActivity.animator.removeAllUpdateListeners();
-                                gameActivity.animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                        gameActivity.upperLeftCorner_ImageView.setAlpha((Float) valueAnimator.getAnimatedValue());
-                                    }
-                                });
-                                gameActivity.animator.start();
-                            }
-                        });
-                        break;
-                    case 1:
-                        gameActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameActivity.animator.removeAllUpdateListeners();
-                                gameActivity.animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                        gameActivity.upperRightCorner_ImageView.setAlpha((Float) valueAnimator.getAnimatedValue());
-                                    }
-                                });
-                                gameActivity.animator.start();
-                            }
-                        });
-                        break;
-                    case 2:
-                        gameActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameActivity.animator.removeAllUpdateListeners();
-                                gameActivity.animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                        gameActivity.lowerLeftCorner_ImageView.setAlpha((Float) valueAnimator.getAnimatedValue());
-                                    }
-                                });
-                                gameActivity.animator.start();
-                            }
-                        });
-                        break;
-                    case 3:
-//                    use handler to do this
-                        gameActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                gameActivity.animator.removeAllUpdateListeners();
-                                gameActivity.animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                    @Override
-                                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                                        gameActivity.lowerRightCorner_ImageView.setAlpha((Float) valueAnimator.getAnimatedValue());
-                                    }
-                                });
-                                gameActivity.animator.start();
-                            }
-                        });
-                        break;
-                    default:
-                        Log.i("INFO", "showSimonSequence: Unhandled position!");
-                }
+    private void showSimonSequence(Integer position) {
+        try {
+            switch (gameType) {
+                case vanilla:
+                    Thread.sleep(1500);
+                    break;
+                case speed:
+                    Thread.sleep(900);
+                    break;
+                case superSpeed:
+                    Thread.sleep(500);
+                    break;
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        switch (position) {
+            case 0:
+                if (!isLocked) {
+                    gameActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            gameActivity.upperLeftCorner_ValueAnimator.start();
+                            gameActivity.soundPool.play(gameActivity.pingID, 1.0f, 1.0f, 0, 0, 1.0f);
+                        }
+                    });
+                }
+                break;
+            case 1:
+                if (!isLocked) {
+                    gameActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            gameActivity.upperRightCorner_ValueAnimator.start();
+                            gameActivity.soundPool.play(gameActivity.pingID, 1.0f, 1.0f, 0, 0, 1.0f);
+                        }
+                    });
+                }
+                break;
+            case 2:
+                if (!isLocked) {
+                    gameActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            gameActivity.lowerLeftCorner_ValueAnimator.start();
+                            gameActivity.soundPool.play(gameActivity.pingID, 1.0f, 1.0f, 0, 0, 1.0f);
+                        }
+                    });
+                }
+                break;
+            case 3:
+                if (!isLocked) {
+                    gameActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            gameActivity.lowerRightCorner_ValueAnimator.start();
+                            gameActivity.soundPool.play(gameActivity.pingID, 1.0f, 1.0f, 0, 0, 1.0f);
+                        }
+                    });
+                }
+                break;
+            default:
+                Log.i("INFO", "showSimonSequence: Unhandled position!");
         }
     }
 
@@ -169,6 +161,7 @@ public class GameLooperTask extends AsyncTask<Void, Void, Void> {
             simonQueue.remove();
             if (simonQueue.isEmpty()) {
                 currentRound++;
+                hasStarted = false;
             }
             return true;
         } else {
